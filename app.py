@@ -20,37 +20,31 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Input Section
-st.markdown("## 📋 Customer Information")
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    # Age Input with icon and cool focus effect
-    age = st.slider('🎂 **Age**', min_value=18, max_value=100, value=30, step=1, help="Select the age of the customer")
-    num_dependents = st.number_input('👨‍👩‍👧‍👦 **Number of Dependents**', min_value=0, value=0, step=1, help="Enter the number of dependents")
-    times_90_days_late = st.number_input('🕑 **Times 90 Days Late**', min_value=0, value=0, step=1, help="Enter the number of times the person was 90 days late")
-
-with col2:
-    monthly_income = st.number_input('💵 **Monthly Income ($)**', min_value=0, value=5000, step=500, help="Enter the customer's monthly income")
-    debt_ratio = st.slider('💳 **Debt Ratio (%)**', 0.0, 5.0, value=2.0, step=0.01, help="Adjust the Debt Ratio")
-    revolving_utilization = st.slider('📈 **Revolving Utilization (%)**', 0.0, 2.0, value=0.5, step=0.01, help="Adjust Revolving Utilization")
-
-with col3:
-    open_credit_lines = st.number_input('🏦 **Number of Open Credit Lines**', min_value=0, value=5, step=1, help="Enter the number of open credit lines")
-    num_30_59_days_past_due = st.number_input('📅 **Number of Times 30-59 Days Past Due**', min_value=0, value=0, step=1, help="Enter the number of times 30-59 days late")
-    real_estate_loans = st.number_input('🏠 **Number of Real Estate Loans or Lines**', min_value=0, value=0, step=1, help="Enter the number of real estate loans")
-    num_60_89_days_past_due = st.number_input('📅 **Number of Times 60-89 Days Past Due**', min_value=0, value=0, step=1, help="Enter the number of times 60-89 days late")
-
-# Custom CSS for hover effects and animation
+# Custom CSS for card layout and hover effect
 st.markdown(
     """
     <style>
+        /* Card Style */
+        .input-card {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Hover Effect to "pop" the card */
+        .input-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
         .stSlider>div>div>input {
             background-color: #eaf5e0;
             border-radius: 15px;
             transition: transform 0.3s ease;
         }
+
         .stSlider>div>div>input:focus {
             transform: scale(1.05);
             box-shadow: 0 0 10px #4CAF50;
@@ -61,6 +55,7 @@ st.markdown(
             border-radius: 15px;
             transition: transform 0.3s ease;
         }
+
         .stNumberInput>div>div>input:focus {
             transform: scale(1.05);
             box-shadow: 0 0 10px #4CAF50;
@@ -83,10 +78,38 @@ st.markdown(
         .stNumberInput>div>div>input:focus {
             border: 2px solid #4CAF50;
         }
+
     </style>
     """,
     unsafe_allow_html=True
 )
+
+# Input Section
+st.markdown("## 📋 Customer Information")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.markdown('<div class="input-card">', unsafe_allow_html=True)
+    age = st.slider('🎂 **Age**', min_value=18, max_value=100, value=30, step=1, help="Select the age of the customer")
+    num_dependents = st.number_input('👨‍👩‍👧‍👦 **Number of Dependents**', min_value=0, value=0, step=1, help="Enter the number of dependents")
+    times_90_days_late = st.number_input('🕑 **Times 90 Days Late**', min_value=0, value=0, step=1, help="Enter the number of times the person was 90 days late")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col2:
+    st.markdown('<div class="input-card">', unsafe_allow_html=True)
+    monthly_income = st.number_input('💵 **Monthly Income ($)**', min_value=0, value=5000, step=500, help="Enter the customer's monthly income")
+    debt_ratio = st.slider('💳 **Debt Ratio (%)**', 0.0, 5.0, value=2.0, step=0.01, help="Adjust the Debt Ratio")
+    revolving_utilization = st.slider('📈 **Revolving Utilization (%)**', 0.0, 2.0, value=0.5, step=0.01, help="Adjust Revolving Utilization")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col3:
+    st.markdown('<div class="input-card">', unsafe_allow_html=True)
+    open_credit_lines = st.number_input('🏦 **Number of Open Credit Lines**', min_value=0, value=5, step=1, help="Enter the number of open credit lines")
+    num_30_59_days_past_due = st.number_input('📅 **Number of Times 30-59 Days Past Due**', min_value=0, value=0, step=1, help="Enter the number of times 30-59 days late")
+    real_estate_loans = st.number_input('🏠 **Number of Real Estate Loans or Lines**', min_value=0, value=0, step=1, help="Enter the number of real estate loans")
+    num_60_89_days_past_due = st.number_input('📅 **Number of Times 60-89 Days Past Due**', min_value=0, value=0, step=1, help="Enter the number of times 60-89 days late")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Predict Button
 st.markdown("### ")
@@ -203,8 +226,4 @@ st.markdown(
     <br><br>
     <hr style="border:1px solid #eee"/>
     <center style="color:gray;">
-    Made with ❤️ by [Yashmit] | Powered by Yash & co. 🚀
-    </center>
-    """,
-    unsafe_allow_html=True
-)
+   
