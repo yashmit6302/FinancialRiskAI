@@ -44,23 +44,19 @@ if st.button('🔮 Predict Risk'):
     with st.spinner('Predicting... Hold tight ⏳'):
         # Create input data
         input_data = pd.DataFrame({
-            'RevolvingUtilizationOfUnsecuredLines': [revolving_utilization],
             'age': [age],
-            'NumberOfTime30-59DaysPastDueNotWorse': [0],  # Placeholder, replace with correct data if available
-            'DebtRatio': [debt_ratio],
             'MonthlyIncome': [monthly_income],
+            'DebtRatio': [debt_ratio],
+            'RevolvingUtilizationOfUnsecuredLines': [revolving_utilization],
             'NumberOfOpenCreditLinesAndLoans': [open_credit_lines],
-            'NumberOfTimes90DaysLate': [times_90_days_late],
-            'NumberRealEstateLoansOrLines': [0],  # Placeholder, replace with correct data if available
-            'NumberOfTime60-89DaysPastDueNotWorse': [0],  # Placeholder, replace with correct data if available
-            'NumberOfDependents': [num_dependents]
+            'NumberOfDependents': [num_dependents],
+            'NumberOfTimes90DaysLate': [times_90_days_late]
         })
 
-        # ✨ Fix: remove the 'Unnamed: 0' column if it exists
-        if 'Unnamed: 0' in input_data.columns:
-            input_data = input_data.drop(columns=['Unnamed: 0'])
+        # 🛠 ADD Unnamed: 0 column
+        input_data['Unnamed: 0'] = 0
 
-        # ✨ Fix: reorder columns according to model's feature order
+        # 🛠 Reorder columns according to model
         input_data = input_data[model.feature_names_in_]
 
         # Make prediction
