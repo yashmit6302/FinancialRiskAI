@@ -53,6 +53,9 @@ if st.button('🔮 Predict Risk'):
             'NumberOfTimes90DaysLate': [times_90_days_late]
         })
 
+        # ✨ Fix: reorder columns according to model
+        input_data = input_data[model.feature_names_in_]
+
         # Make prediction
         prediction = model.predict(input_data)
         proba = model.predict_proba(input_data)
