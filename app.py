@@ -154,7 +154,7 @@ st.markdown(
     <br><br>
     <hr style="border:1px solid #eee"/>
     <center style="color:gray;">
-    Made with ❤️ by [Yashmit] | Powered by Yash & co. 🚀
+    Made with ❤️ by Deepansh Sharma | Supported by Miss Ritika Chowdhary 🚀
     </center>
     """,
     unsafe_allow_html=True
