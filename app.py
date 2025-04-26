@@ -56,6 +56,10 @@ if st.button('🔮 Predict Risk'):
             'NumberOfDependents': [num_dependents]
         })
 
+        # ✨ Fix: remove the 'Unnamed: 0' column if it exists
+        if 'Unnamed: 0' in input_data.columns:
+            input_data = input_data.drop(columns=['Unnamed: 0'])
+
         # ✨ Fix: reorder columns according to model's feature order
         input_data = input_data[model.feature_names_in_]
 
