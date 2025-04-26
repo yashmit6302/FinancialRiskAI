@@ -19,55 +19,55 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Define the feature types and default values
+feature_inputs = {
+    'age': ('number', 18, 100, 30),
+    'MonthlyIncome': ('number', 0, 100000, 5000),
+    'DebtRatio': ('slider', 0.0, 5.0, 0.01, 0.5),
+    'RevolvingUtilizationOfUnsecuredLines': ('slider', 0.0, 2.0, 0.01, 0.5),
+    'NumberOfOpenCreditLinesAndLoans': ('number', 0, 50, 5),
+    'NumberOfDependents': ('number', 0, 10, 0),
+    'NumberOfTimes90DaysLate': ('number', 0, 10, 0),
+    'NumberOfTime30-59DaysPastDueNotWorse': ('number', 0, 10, 0),
+    'NumberRealEstateLoansOrLines': ('number', 0, 10, 0),
+    'NumberOfTime60-89DaysPastDueNotWorse': ('number', 0, 10, 0),
+}
+
 # Input Section
 st.markdown("## 📋 Customer Information")
 
+input_data = {}
 col1, col2, col3 = st.columns(3)
+columns = [col1, col2, col3]
+i = 0
 
-with col1:
-    age = st.number_input('🎂 Age', min_value=18, max_value=100, value=30)
-    num_dependents = st.number_input('👨‍👩‍👧‍👦 Number of Dependents', min_value=0, value=0)
-    times_90_days_late = st.number_input('🕑 Times 90 Days Late', min_value=0, value=0)
-
-with col2:
-    monthly_income = st.number_input('💵 Monthly Income ($)', min_value=0, value=5000)
-    debt_ratio = st.slider('💳 Debt Ratio (%)', 0.0, 5.0, step=0.01)
-    revolving_utilization = st.slider('📈 Revolving Utilization (%)', 0.0, 2.0, step=0.01)
-
-with col3:
-    open_credit_lines = st.number_input('🏦 Number of Open Credit Lines', min_value=0, value=5)
-    num_30_59_days_past_due = st.number_input('📅 Number of Times 30-59 Days Past Due', min_value=0, value=0)
-    real_estate_loans = st.number_input('🏠 Number of Real Estate Loans or Lines', min_value=0, value=0)
-    num_60_89_days_past_due = st.number_input('📅 Number of Times 60-89 Days Past Due', min_value=0, value=0)
+for feature in feature_inputs:
+    input_type = feature_inputs[feature][0]
+    if input_type == 'number':
+        min_val, max_val, default = feature_inputs[feature][1], feature_inputs[feature][2], feature_inputs[feature][3]
+        input_data[feature] = columns[i % 3].number_input(f'{feature}', min_value=min_val, max_value=max_val, value=default)
+    elif input_type == 'slider':
+        min_val, max_val, step, default = feature_inputs[feature][1], feature_inputs[feature][2], feature_inputs[feature][3], feature_inputs[feature][4]
+        input_data[feature] = columns[i % 3].slider(f'{feature}', min_val, max_val, value=default, step=step)
+    i += 1
 
 # Predict Button
 st.markdown("### ")
 if st.button('🔮 Predict Risk'):
 
     with st.spinner('Predicting... Hold tight ⏳'):
-        # Create input data
-        input_data = pd.DataFrame({
-            'age': [age],
-            'MonthlyIncome': [monthly_income],
-            'DebtRatio': [debt_ratio],
-            'RevolvingUtilizationOfUnsecuredLines': [revolving_utilization],
-            'NumberOfOpenCreditLinesAndLoans': [open_credit_lines],
-            'NumberOfDependents': [num_dependents],
-            'NumberOfTimes90DaysLate': [times_90_days_late],
-            'NumberOfTime30-59DaysPastDueNotWorse': [num_30_59_days_past_due],
-            'NumberRealEstateLoansOrLines': [real_estate_loans],
-            'NumberOfTime60-89DaysPastDueNotWorse': [num_60_89_days_past_due]
-        })
-
-        # Add Unnamed:0 column
+        # Add 'Unnamed: 0' column
         input_data['Unnamed: 0'] = 0
 
-        # Reorder columns to match model
-        input_data = input_data[model.feature_names_in_]
+        # Create DataFrame
+        input_df = pd.DataFrame([input_data])
+
+        # Reorder columns according to model
+        input_df = input_df[model.feature_names_in_]
 
         # Make prediction
-        prediction = model.predict(input_data)
-        proba = model.predict_proba(input_data)
+        prediction = model.predict(input_df)
+        proba = model.predict_proba(input_df)
 
         # Small delay for effect
         time.sleep(1)
@@ -101,16 +101,7 @@ if st.button('🔮 Predict Risk'):
         f"""
         <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px;">
         <ul>
-            <li><b>Age:</b> {age}</li>
-            <li><b>Monthly Income:</b> ${monthly_income}</li>
-            <li><b>Debt Ratio:</b> {debt_ratio}</li>
-            <li><b>Revolving Utilization:</b> {revolving_utilization}</li>
-            <li><b>Open Credit Lines:</b> {open_credit_lines}</li>
-            <li><b>Times 90 Days Late:</b> {times_90_days_late}</li>
-            <li><b>Times 30-59 Days Past Due:</b> {num_30_59_days_past_due}</li>
-            <li><b>Real Estate Loans/Lines:</b> {real_estate_loans}</li>
-            <li><b>Times 60-89 Days Past Due:</b> {num_60_89_days_past_due}</li>
-            <li><b>Dependents:</b> {num_dependents}</li>
+            {''.join([f"<li><b>{key}:</b> {value}</li>" for key, value in input_data.items() if key != 'Unnamed: 0'])}
         </ul>
         </div>
         """,
