@@ -44,16 +44,19 @@ if st.button('🔮 Predict Risk'):
     with st.spinner('Predicting... Hold tight ⏳'):
         # Create input data
         input_data = pd.DataFrame({
-            'age': [age],
-            'MonthlyIncome': [monthly_income],
-            'DebtRatio': [debt_ratio],
             'RevolvingUtilizationOfUnsecuredLines': [revolving_utilization],
+            'age': [age],
+            'NumberOfTime30-59DaysPastDueNotWorse': [0],  # Placeholder, replace with correct data if available
+            'DebtRatio': [debt_ratio],
+            'MonthlyIncome': [monthly_income],
             'NumberOfOpenCreditLinesAndLoans': [open_credit_lines],
-            'NumberOfDependents': [num_dependents],
-            'NumberOfTimes90DaysLate': [times_90_days_late]
+            'NumberOfTimes90DaysLate': [times_90_days_late],
+            'NumberRealEstateLoansOrLines': [0],  # Placeholder, replace with correct data if available
+            'NumberOfTime60-89DaysPastDueNotWorse': [0],  # Placeholder, replace with correct data if available
+            'NumberOfDependents': [num_dependents]
         })
 
-        # ✨ Fix: reorder columns according to model
+        # ✨ Fix: reorder columns according to model's feature order
         input_data = input_data[model.feature_names_in_]
 
         # Make prediction
