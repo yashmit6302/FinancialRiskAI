@@ -27,15 +27,18 @@ col1, col2, col3 = st.columns(3)
 with col1:
     age = st.number_input('🎂 Age', min_value=18, max_value=100, value=30)
     num_dependents = st.number_input('👨‍👩‍👧‍👦 Number of Dependents', min_value=0, value=0)
+    times_90_days_late = st.number_input('🕑 Times 90 Days Late', min_value=0, value=0)
 
 with col2:
     monthly_income = st.number_input('💵 Monthly Income ($)', min_value=0, value=5000)
     debt_ratio = st.slider('💳 Debt Ratio (%)', 0.0, 5.0, step=0.01)
+    revolving_utilization = st.slider('📈 Revolving Utilization (%)', 0.0, 2.0, step=0.01)
 
 with col3:
-    revolving_utilization = st.slider('📈 Revolving Utilization (%)', 0.0, 2.0, step=0.01)
     open_credit_lines = st.number_input('🏦 Number of Open Credit Lines', min_value=0, value=5)
-    times_90_days_late = st.number_input('🕑 Times 90 Days Late', min_value=0, value=0)
+    num_30_59_days_past_due = st.number_input('📅 Number of Times 30-59 Days Past Due', min_value=0, value=0)
+    real_estate_loans = st.number_input('🏠 Number of Real Estate Loans or Lines', min_value=0, value=0)
+    num_60_89_days_past_due = st.number_input('📅 Number of Times 60-89 Days Past Due', min_value=0, value=0)
 
 # Predict Button
 st.markdown("### ")
@@ -49,34 +52,24 @@ if st.button('🔮 Predict Risk'):
             'DebtRatio': [debt_ratio],
             'RevolvingUtilizationOfUnsecuredLines': [revolving_utilization],
             'NumberOfOpenCreditLinesAndLoans': [open_credit_lines],
+            'NumberOfDependents': [num_dependents],
             'NumberOfTimes90DaysLate': [times_90_days_late],
-            'NumberOfDependents': [num_dependents]
+            'NumberOfTime30-59DaysPastDueNotWorse': [num_30_59_days_past_due],
+            'NumberRealEstateLoansOrLines': [real_estate_loans],
+            'NumberOfTime60-89DaysPastDueNotWorse': [num_60_89_days_past_due]
         })
 
-        # Add missing columns required by model and fill with 0
-        input_data['NumberOfTime30-59DaysPastDueNotWorse'] = 0
-        input_data['NumberRealEstateLoansOrLines'] = 0
-        input_data['NumberOfTime60-89DaysPastDueNotWorse'] = 0
+        # Add Unnamed:0 column
+        input_data['Unnamed: 0'] = 0
 
-        # Reorder columns according to model
-        input_data = input_data[[
-            'RevolvingUtilizationOfUnsecuredLines',
-            'age',
-            'NumberOfTime30-59DaysPastDueNotWorse',
-            'DebtRatio',
-            'MonthlyIncome',
-            'NumberOfOpenCreditLinesAndLoans',
-            'NumberOfTimes90DaysLate',
-            'NumberRealEstateLoansOrLines',
-            'NumberOfTime60-89DaysPastDueNotWorse',
-            'NumberOfDependents'
-        ]]
+        # Reorder columns to match model
+        input_data = input_data[model.feature_names_in_]
 
         # Make prediction
         prediction = model.predict(input_data)
         proba = model.predict_proba(input_data)
 
-        # Small delay for effect
+        # Small delay for animation effect
         time.sleep(1)
 
     # Results Layout
@@ -86,7 +79,7 @@ if st.button('🔮 Predict Risk'):
     risk_percentage = proba[0][1] * 100
     safe_percentage = proba[0][0] * 100
 
-    # Set Risk Levels and Color
+    # Decide color based on risk percentage
     if risk_percentage <= 20:
         risk_status = "🟢 **Very Low Financial Risk!**"
         bar_color = "green"
@@ -97,28 +90,36 @@ if st.button('🔮 Predict Risk'):
         risk_status = "🟠 **Moderate Financial Risk.**"
         bar_color = "orange"
     elif risk_percentage <= 80:
-        risk_status = "🛑 **High Financial Risk!**"
+        risk_status = "🔴 **High Financial Risk!**"
         bar_color = "red"
     else:
         risk_status = "🔥 **Very High Financial Risk (Critical)!**"
         bar_color = "darkred"
 
-    # Show the status
+    # Animate the risk bar
     st.markdown(risk_status)
-
-    # Show colored progress bar
     st.markdown("#### Risk Probability")
-    st.markdown(
-        f"""
-        <div style="background-color: lightgray; border-radius: 10px; height: 25px;">
-            <div style="background-color: {bar_color}; width: {risk_percentage}%; height: 100%; border-radius: 10px; text-align: center; color: white;">
-                <b>{risk_percentage:.2f}%</b>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
+    # Animation: fill progress bar step by step
+    progress_placeholder = st.empty()
+    progress_bar = 0
+    while progress_bar < risk_percentage:
+        progress_bar += 1
+        if progress_bar > risk_percentage:
+            progress_bar = risk_percentage
+        progress_placeholder.markdown(
+            f"""
+            <div style="background-color: lightgray; border-radius: 10px; height: 25px;">
+                <div style="background-color: {bar_color}; width: {progress_bar}%; height: 100%; border-radius: 10px; text-align: center; color: white;">
+                    <b>{progress_bar:.2f}%</b>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        time.sleep(0.01)  # controls speed of animation
+
+    st.markdown(f"**Risk Probability:** `{risk_percentage:.2f}%`")
     st.markdown(f"**Safe Probability:** `{safe_percentage:.2f}%`")
 
     st.markdown("---")
@@ -137,6 +138,9 @@ if st.button('🔮 Predict Risk'):
             <li><b>Revolving Utilization:</b> {revolving_utilization}</li>
             <li><b>Open Credit Lines:</b> {open_credit_lines}</li>
             <li><b>Times 90 Days Late:</b> {times_90_days_late}</li>
+            <li><b>Times 30-59 Days Past Due:</b> {num_30_59_days_past_due}</li>
+            <li><b>Real Estate Loans/Lines:</b> {real_estate_loans}</li>
+            <li><b>Times 60-89 Days Past Due:</b> {num_60_89_days_past_due}</li>
             <li><b>Dependents:</b> {num_dependents}</li>
         </ul>
         </div>
